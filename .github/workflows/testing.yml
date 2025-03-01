@@ -1,0 +1,39 @@
+name: Run Tests
+
+on:
+  pull_request:
+    branches:
+      - develop
+
+env:
+  NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    container: node:18.20-alpine3.19
+    defaults:
+      run:
+        working-directory: ./
+
+    strategy:
+      matrix:
+        node-version: [18]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Install dependencies
+        run: yarn
+
+      - name: Run lint
+        run: yarn lint
+
+      - name: Run build
+        run: yarn build
